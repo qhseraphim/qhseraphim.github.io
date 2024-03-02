@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Code Counter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #222;
+      color: #eee;
+      padding: 20px;
+    }
+    textarea {
+      width: calc(80% - 20px);
+      height: 200px;
+      margin: 20px auto;
+      background-color: #333;
+      color: #eee;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      resize: none;
+      overflow-y: auto;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #remark {
+      margin-top: 20px;
+      color: #fff;
+      width: calc(100% - 40px);
+      margin-bottom: 20px;
+      overflow-y: auto;
+    }
+    /* Green background for remaining lines */
+    .green-bg {
+      background-color: rgba(0, 128, 0, 0.1);
+    }
+    /* Red background for removed lines */
+    .red-bg {
+      background-color: rgba(255, 0, 0, 0.1);
+    }
+    /* Code block styling */
+    .code-block {
+      font-family: "Courier New", Courier, monospace;
+      background-color: #333;
+      color: #eee;
+      padding: 20px;
+      border-radius: 5px;
+      overflow-y: auto;
+      text-align: left;
+      white-space: pre-wrap;
+      tab-size: 4;
+    }
+  </style>
+</head>
+<body>
+<h1>Code Counter</h1>
+<textarea id="code" placeholder="Enter your code here..."></textarea><br>
+<button onclick="count()">Count Lines</button>
+<div id="remark"></div>
+<div id="codeChanges" class="code-block"></div>
+<script>
+  function count() {
+    const code = document.getElementById('code').value;
+    const splitted = code.split('\n');
+    let countAll = splitted.length;
+    const trimmed = splitted.filter(x => x.trim() !== '' && !x.trimStart().startsWith('/') && !x.trimStart().startsWith('*'));
+    let countNice = trimmed.length;
+
+    console.log(trimmed.join("\n"));
+    const trimmedEvil = trimmed.filter(x => !x.trimStart().startsWith('}') && !x.trimStart().startsWith('@'));
+    let countEvil = trimmedEvil.length;
+
+    document.getElementById('remark').innerHTML = `That's ${countAll} lines of code <br> ${countNice} without comments and blanks, <br> ${countEvil} without <span class="green">@annotations</span> and } either:`;
+
+    const originalCodeBlock = document.getElementById('codeChanges');
+    originalCodeBlock.innerHTML = "<b>Original Code:</b><br>";
+    splitted.forEach(line => {
+      if (line.trim() === '' || line.trim().startsWith('@') || line.trim() === '}') {
+        originalCodeBlock.innerHTML += `<span class="red-bg">${line}</span><br>`;
+      } else if (trimmed.includes(line)) {
+        originalCodeBlock.innerHTML += `<span class="green-bg">${line}</span><br>`;
+      } else {
+        originalCodeBlock.innerHTML += `<span class="red-bg">${line}</span><br>`;
+      }
+    });
+  }
+</script>
+</body>
+</html>
